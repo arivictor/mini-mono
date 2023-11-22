@@ -33,11 +33,11 @@ jobs:
       run: |
         for module in modules/*; do
           if [ -d "$module/tests" ]; then
-            unit_test_file="$module/tests/unit.tftest.hcl"
-            integration_test_file="$module/tests/integration.tftest.hcl"
+            unit_test_file="tests/unit.tftest.hcl"
+            integration_test_file="tests/integration.tftest.hcl"
 
             if [ ! -f "$unit_test_file" ] && [ ! -f "$integration_test_file" ]; then
-              echo "Error: Neither unit.tftest.hcl nor integration.tftest.hcl found in $module/tests"
+              echo "Error: Neither ${unit_test_file} nor ${integration_test_file} found in $module/tests"
               exit 1
             fi
 
