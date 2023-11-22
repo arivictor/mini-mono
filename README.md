@@ -4,18 +4,6 @@ Discovery for `terraform test` replicating a mono repo with modules
 
 ## Getting Started
 
-Navigate to the module
-
-```shell
-cd ./modules/bucket
-```
-
-Initialise the module
-
-```shell
-terraform init
-```
-
 Set your gcloud ADC
 
 ```shell
@@ -29,6 +17,18 @@ export GOOGLE_CLOUD_PROJECT="..."
 ```
 
 ## Run the tests
+
+Navigate to the module to be tested
+
+```shell
+cd ./modules/bucket
+```
+
+Initialise the module terrform
+
+```shell
+terraform init
+```
 
 You can run all tests within the modules `tests/` folder by running:
 
@@ -52,7 +52,7 @@ tests/unit.tftest.hcl... pass
 Success! 3 passed, 0 failed.
 ```
 
-You can also specify tests to run. 
+You can also specify which tests to run. 
 
 A file naming pattern has been used to separate unit tests (plan) from integrations tests (apply).
 
