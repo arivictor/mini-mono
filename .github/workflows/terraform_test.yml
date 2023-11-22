@@ -1,0 +1,67 @@
+name: 'Terraform Test'
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  
+env:
+  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+  
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Format
+      run: terraform fmt -recursive -check
+
+    - name: Terraform Test
+      run: |
+        for module in modules/*; do
+          if [ -d "$module/tests" ]; then
+            unit_test_file="$module/tests/unit.tftest.hcl"
+            integration_test_file="$module/tests/integration.tftest.hcl"
+
+            if [ ! -f "$unit_test_file" ] && [ ! -f "$integration_test_file" ]; then
+              echo "Error: Neither unit.tftest.hcl nor integration.tftest.hcl found in $module/tests"
+              exit 1
+            fi
+
+            terraform init
+            
+            if [ -f "$unit_test_file" ]; then
+              echo "Running unit tests in $module"
+              cd $module
+              terraform init
+              terraform test -filter="$unit_test_file"
+              cd - # Go back to the root directory
+            else
+              echo "No unit tests found for $module"
+            fi
+
+            if [ -f "$integration_test_file" ]; then
+              echo "Running integration tests in $module"
+              cd $module
+              terraform init
+              terraform test -filter="$integration_test_file"
+              cd - # Go back to the root directory
+            else
+              echo "No integration tests found for $module"
+            fi
+      
+          fi
+        done
