@@ -50,7 +50,6 @@ jobs:
               echo "Running unit tests in $module"
               terraform init
               terraform test -filter="$unit_test_file"
-              cd - # Go back to the root directory
             else
               echo "No unit tests found for $module"
             fi
@@ -59,10 +58,11 @@ jobs:
               echo "Running integration tests in $module"
               terraform init
               terraform test -filter="$integration_test_file"
-              cd - # Go back to the root directory
             else
               echo "No integration tests found for $module"
             fi
+
+            cd .. # back out
       
           fi
         done
